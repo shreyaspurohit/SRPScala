@@ -1,0 +1,31 @@
+@(form:Form[controllers.Register])(errors:List[String] = List())
+
+@import helper.twitterBootstrap._
+
+@*
+	The register page
+*@
+
+@css = {
+<style type="text/css">
+	div .input{
+				display: inline;
+   }
+</style>   
+}
+
+@main("SRP Example", css) {
+<p><a href="/">Back</a></p>
+@errors.map(error =>
+	<li class="error">{error}</li>
+)
+	    	@helper.form(action = routes.Application.register) {
+    
+    			@helper.inputText(form("Username"))
+    
+    			@helper.inputPassword(form("Password"))
+    			
+    			<input type="submit" value="Register"/>    
+			}
+}
+			

@@ -1,0 +1,165 @@
+@*
+	The login page
+*@
+
+
+@css = {
+<style type="text/css">
+	div .input{
+				display: inline;
+   }
+</style>   
+}
+
+@script = {
+<script src="@routes.Assets.at("javascripts/titaniumcore/packages.js")"></script>
+<script src="@routes.Assets.at("javascripts/titaniumcore/binary.js")"></script>
+
+<script src="@routes.Assets.at("javascripts/titaniumcore/BigInteger.init1.js")"></script>
+<script src="@routes.Assets.at("javascripts/titaniumcore/BigInteger.init2.js")"></script>
+<script src="@routes.Assets.at("javascripts/titaniumcore/BigInteger.init3.js")"></script>
+
+<script src="@routes.Assets.at("javascripts/titaniumcore/jsSHA.js")"></script>
+<script src="@routes.Assets.at("javascripts/titaniumcore/SHA.js")"></script>
+<script src="@routes.Assets.at("javascripts/titaniumcore/SecureRandom.js")"></script>
+
+<script src="@routes.Assets.at("javascripts/srp.js")"></script>
+<script type="text/javascript">
+    var sendImg = $('<img src="@routes.Assets.at("images/send.png")" width="16" height="16">')
+    var receiveImg = $('<img src="@routes.Assets.at("images/receive.png")" width="16" height="16">')
+    var generatedImg = $('<img src="@routes.Assets.at("images/generated.png")" width="16" height="16">')
+    
+	function loginAction() {
+		$('.message').empty();
+		//SRP logic
+		var aVal = a();
+		var Aval = A(aVal);
+		var AvalHex = Aval.toHexString();
+		var username = $('#txtUsername').val();
+		var password = $('#txtPassword').val();
+		$('.message').append(generatedImg.clone()).append("<label>Generated a: " + aVal.toHexString() + "</label><br/>");
+		$('.message').append(sendImg.clone()).append("<label>Sending A: " + AvalHex + "</label><br/>");
+		$('.message').append(sendImg.clone()).append("<label>Sending username: " + username + "</label><br/>");
+		
+		$.ajax({
+		  url: '/login',
+		  type: 'POST',
+		  data: {"username" : username, "A" : AvalHex}
+		}).success(function(data){
+			if(data.indexOf("Error") >= 0){
+				$('.message').append("<label class='error'>" + data + "</label>");
+			}else{
+				var exch1 = data.split(",")
+				var Sval = currentSession(exch1[0], exch1[1], aVal, Aval, password)
+				$('.message').append(receiveImg.clone()).append("<label>Received s: " + exch1[0] + "</label><br/>");
+				$('.message').append(receiveImg.clone()).append("<label>Received B: " + exch1[1] + "</label><br/>");
+				$('.message').append(generatedImg.clone()).append("<label>Current Expected Session S: " + Sval + "</label><br/>");
+				setCookie("sessionId", Sval);
+				setCookie("username", username);
+				validateServer();				
+			}
+		}).error(function(err){
+			alert(err)
+		})
+		
+	}
+	
+	function validateServer(){
+		var sessionId = getCookie("sessionId");
+		var username = getCookie("username");
+		var K = H(new BigInteger(sessionId, 16).toByteArray(), [])
+		var Khex = K.toHexString()
+		$('.message').append(sendImg.clone()).append("<label>Sending K: " + Khex + "</label><br/>");
+		
+		$.ajax({
+			  url: '/validateServer',
+			  type: 'GET',
+			  data: {"username" : username, "K" : Khex}
+			}).success(function(data){
+				if(data.indexOf("Error") >= 0){
+					$('.message').append("<label class='error'>" + data + "</label>");
+				}else{
+					if(data == sessionId){
+						$('.message').append("<label style='color:green;'>" + "Authenticated Server" + "</label>");
+						//At this point client has authenticated itself to server(Using K) and viceversa (using S).
+						getTheSecretPage();
+					}else{
+						$('.message').append("<label style='error'>" + "Authenticating Server Failed" + "</label>");
+					}
+				}				
+			}).error(function(err){
+				alert(err)
+			})
+		
+	}
+	
+	function getTheSecretPage(){
+		var sessionId = getCookie("sessionId");
+		var username = getCookie("username");
+		$.ajax({
+			  url: '/secret',
+			  type: 'GET',
+			  data: {"username" : username, "sessionId" : sessionId}
+			}).success(function(data){
+				if(data.indexOf("Error") >= 0){
+					$('.message').append("<label class='error'>" + data + "</label>");
+				}else{
+					$('.loginForm').empty();
+					$('.loginForm').append(data);	
+				}				
+			}).error(function(err){
+				alert(err)
+			})
+	}
+	
+	/**
+	* 
+	* Cookie code taken from http://www.w3schools.com/js/js_cookies.asp
+	*
+	*/
+	function setCookie(c_name,value,exdays)
+	{
+		var exdate=new Date();
+		exdate.setDate(exdate.getDate() + exdays);
+		var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+		document.cookie=c_name + "=" + c_value;
+	}
+	
+	function getCookie(c_name)
+	{
+		var i,x,y,ARRcookies=document.cookie.split(";");
+		for (i=0;i<ARRcookies.length;i++)
+		{
+		  x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+		  y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+		  x=x.replace(/^\s+|\s+$/g,"");
+		  if (x==c_name)
+		    {
+		    return unescape(y);
+		    }
+		  }
+	}
+	
+</script>
+}
+
+@main("SRP Example", css, script) {
+<div class="loginForm">
+<p>
+	<a href="/">Back</a>
+</p>
+<form action="/login">
+	<div>
+		<label>Username*</label> <input type="text" id="txtUsername">
+	</div>
+	<div>
+		<label>Password*</label> <input type="password" id="txtPassword">
+	</div>
+</form>
+<div>
+	<button type="submit" value="Login" id="btnLogin"
+		onclick="loginAction()">Login</button>
+</div>
+</div>
+<div class="message"></div>
+}

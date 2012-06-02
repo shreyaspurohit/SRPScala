@@ -1,0 +1,21 @@
+@(title: String, css: Html = Html(""), script:Html = Html(""))(content: Html)
+
+@*
+	The site template
+*@
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.7.2.min.js")" type="text/javascript"></script>
+        @script
+        @css
+    </head>
+    <body>
+        @content
+    </body>
+</html>
