@@ -15,26 +15,26 @@ The SRP design from http://srp.stanford.edu/design.html exlains the process as:
 SRP is the newest addition to a new class of strong authentication protocols that resist all the well-known passive and active attacks over the network. SRP borrows some elements from other key-exchange and identification protcols and adds some subtle modifications and refinements. The result is a protocol that preserves the strength and efficiency of the EKE family protocols while fixing some of their shortcomings.
 The following is a description of SRP-6 and 6a, the latest versions of SRP:
 
-  N    A large safe prime (N = 2q+1, where q is prime)
-       All arithmetic is done modulo N.
-  g    A generator modulo N
-  k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
-  s    User's salt
-  I    Username
-  p    Cleartext Password
-  H()  One-way hash function
-  ^    (Modular) Exponentiation
-  u    Random scrambling parameter
-  a,b  Secret ephemeral values
-  A,B  Public ephemeral values
-  x    Private key (derived from p and s)
-  v    Password verifier
+		  N    A large safe prime (N = 2q+1, where q is prime)
+			   All arithmetic is done modulo N.
+		  g    A generator modulo N
+		  k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
+		  s    User's salt
+		  I    Username
+		  p    Cleartext Password
+		  H()  One-way hash function
+		  ^    (Modular) Exponentiation
+		  u    Random scrambling parameter
+		  a,b  Secret ephemeral values
+		  A,B  Public ephemeral values
+		  x    Private key (derived from p and s)
+		  v    Password verifier
 The host stores passwords using the following formula:
-  x = H(s, p)               (s is chosen randomly)
-  v = g^x                   (computes password verifier)
+		  x = H(s, p)               (s is chosen randomly)
+		  v = g^x                   (computes password verifier)
 The host then keeps {I, s, v} in its password database. The authentication protocol itself goes as follows:
-User -> Host:  I, A = g^a                  (identifies self, a = random number)
-Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
+		User -> Host:  I, A = g^a                  (identifies self, a = random number)
+		Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
 
         Both:  u = H(A, B)
 
@@ -45,11 +45,11 @@ Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
         Host:  S = (Av^u) ^ b              (computes session key)
         Host:  K = H(S)
 Now the two parties have a shared, strong session key K. To complete authentication, they need to prove to each other that their keys match. One possible way:
-User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
-Host -> User:  H(A, M, K)
+		User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
+		Host -> User:  H(A, M, K)
 The two parties also employ the following safeguards:
-The user will abort if he receives B == 0 (mod N) or u == 0.
-The host will abort if it detects that A == 0 (mod N).
-The user must show his proof of K first. If the server detects that the user's proof is incorrect, it must abort without showing its own proof of K.
+* The user will abort if he receives B == 0 (mod N) or u == 0.
+* The host will abort if it detects that A == 0 (mod N).
+* The user must show his proof of K first. If the server detects that the user's proof is incorrect, it must abort without showing its own proof of K.
 
 
