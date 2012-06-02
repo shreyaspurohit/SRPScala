@@ -29,10 +29,14 @@ The following is a description of SRP-6 and 6a, the latest versions of SRP:
 		  A,B  Public ephemeral values
 		  x    Private key (derived from p and s)
 		  v    Password verifier
+
 The host stores passwords using the following formula:
+
 		  x = H(s, p)               (s is chosen randomly)
 		  v = g^x                   (computes password verifier)
+
 The host then keeps {I, s, v} in its password database. The authentication protocol itself goes as follows:
+
 		User -> Host:  I, A = g^a                  (identifies self, a = random number)
 		Host -> User:  s, B = kv + g^b             (sends salt, b = random number)
 
@@ -44,9 +48,12 @@ The host then keeps {I, s, v} in its password database. The authentication proto
 
         Host:  S = (Av^u) ^ b              (computes session key)
         Host:  K = H(S)
+
 Now the two parties have a shared, strong session key K. To complete authentication, they need to prove to each other that their keys match. One possible way:
+
 		User -> Host:  M = H(H(N) xor H(g), H(I), s, A, B, K)
 		Host -> User:  H(A, M, K)
+
 The two parties also employ the following safeguards:
 * The user will abort if he receives B == 0 (mod N) or u == 0.
 * The host will abort if it detects that A == 0 (mod N).
