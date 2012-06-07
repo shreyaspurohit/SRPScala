@@ -75,9 +75,9 @@ function initPackages( __scope ) {
     };
 
 
-    Object.prototype.resolve = function( pathString ) {
-	return __package( this, pathString );
-    };
+    //Object.prototype.resolve = function( pathString ) {
+	//return __package( this, pathString );
+    //};
 
     __scope.__package = __package;
     __scope.__import = __import;
