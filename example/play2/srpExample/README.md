@@ -5,7 +5,7 @@ The usage of SRP library is demonstrated in an simplistic way using Play 2.0 fra
 
 The javascript side of the code is present in srp.js and usage example is present at login.scala.html. The class ExampleSRPServer provides an implementation of SRPServer trait. The methods login and register shows example usage of ExampleSRPServer. The code is simple to understand and commented (provided SRP, play 2.0 is understood). The logic of calculating M is simplified so that client sends M=H(K) and server validates and send verifier=H(M,K) for client to validate with its H(M,K) (for identifying the correctness of the server). The logic to logout is not present, but can be added easily by clearing the cookie on the server side and removing the current session from server side. Override the value of N if required, but it done must be done at both client (js) and server (scala) must have the same value.
 
-To run the example, cd into srpExample. Execute command "play run" to start the server. (Play 2.0 must be installed). Register a new username with password. This must be generally a SSL using https. Login using existing username/password - shreyas/shreyas or use a new registered user.
+To run the example, cd into srpExample. Execute command "play run" to start the server. (Play 2.0 must be installed). Register a new username with password. This must be generally a SSL using https. Registered a new user and login.
 
 SRP Design
 ----------

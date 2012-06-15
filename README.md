@@ -11,7 +11,7 @@ Clone the repo. The build script is provided in sbt. Run clean, compile, test, p
 Example
 -------
 
-The example folder consists of an example to use the library. The example currently is provided in Play 2.0. Please look at Readme.txt present in the example folder. Just run the application, you can register and go to login page to see SRP in action. Example UN/PW are already registered: shreyas/shreyas. You can see it live in action at http://srp.bitourea.com (A little modified version with memory to save instead of File I/O for storing data). 
+The example folder consists of an example to use the library. The example currently is provided in Play 2.0. Please look at Readme.txt present in the example folder. Just run the application, you can register and go to login page to see SRP in action. You can see it live in action at http://srp.bitourea.com (A little modified version with memory to save instead of File I/O for storing data). 
 
 Documentation
 -------------

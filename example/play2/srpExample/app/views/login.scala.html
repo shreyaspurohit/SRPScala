@@ -83,9 +83,9 @@
 			}).success(function(data){
 				if(data.indexOf("Error") >= 0){
 					$('.message').append("<label class='error'>" + data + "</label>");
-				}else{
+				}else{										
 					$('.message').append(receiveImg.clone()).append("<label>Received verifier: " + data + "</label><br/>");
-					if(data == verifier){
+					if(new BigInteger("00" + data, 16).equals(new BigInteger("00" + verifier, 16))){
 						$('.message').append("<label style='color:green;'>" + "Authenticated Server" + "</label>");
 						//At this point client has authenticated itself to server(Using K) and viceversa (using S).
 						getTheSecretPage();
