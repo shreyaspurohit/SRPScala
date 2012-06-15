@@ -67,19 +67,25 @@
 	function validateServer(){
 		var sessionId = getCookie("sessionId");
 		var username = getCookie("username");
-		var K = H(new BigInteger(sessionId, 16).toByteArray(), [])
-		var Khex = K.toHexString()
-		$('.message').append(sendImg.clone()).append("<label>Sending K: " + Khex + "</label><br/>");
+		var Khex = K(sessionId)
+		var Mval = M(Khex)
+		var verifier = serverVerifier(Mval, Khex) 
+		
+		$('.message').append(generatedImg.clone()).append("<label>Generated session Id: " + sessionId + "</label><br/>");
+		$('.message').append(generatedImg.clone()).append("<label>Generated K: " + Khex + "</label><br/>");
+		$('.message').append(sendImg.clone()).append("<label>Sending M: " + Mval + "</label><br/>");
+		$('.message').append(generatedImg.clone()).append("<label>Expecting Verifier: " + verifier + "</label><br/>");
 		
 		$.ajax({
 			  url: '/validateServer',
 			  type: 'GET',
-			  data: {"username" : username, "K" : Khex}
+			  data: {"username" : username, "K" : Mval}
 			}).success(function(data){
 				if(data.indexOf("Error") >= 0){
 					$('.message').append("<label class='error'>" + data + "</label>");
 				}else{
-					if(data == sessionId){
+					$('.message').append(receiveImg.clone()).append("<label>Received verifier: " + data + "</label><br/>");
+					if(data == verifier){
 						$('.message').append("<label style='color:green;'>" + "Authenticated Server" + "</label>");
 						//At this point client has authenticated itself to server(Using K) and viceversa (using S).
 						getTheSecretPage();

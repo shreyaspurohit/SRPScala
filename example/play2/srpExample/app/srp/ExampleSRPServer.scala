@@ -102,4 +102,9 @@ object ExampleSRPServer extends SRPServer{
     val (s,h) = currentSession.getOrElse(userName, ("",""))
     s
   }
+  
+  def getSessionWithHash(userName:String) = {
+    val (s,h) = currentSession.getOrElse(userName, ("",""))
+    (s,h)
+  }  
 }

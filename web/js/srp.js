@@ -99,3 +99,16 @@ function updateServerSaltIfRequired(ss){
 	}
 	return ss;
 }
+
+function M(Khex){    	
+    	var Mval = H(new BigInteger(Khex, 16).toByteArray(),[]);
+    	return Mval.toHexString();
+}
+
+function serverVerifier(Mval,Khex){
+	return H(new BigInteger(Mval, 16).toByteArray(),new BigInteger(Khex, 16).toByteArray()).toHexString()
+}
+
+function K(sessionId){
+	return H(new BigInteger(sessionId, 16).toByteArray(), []).toHexString()
+}

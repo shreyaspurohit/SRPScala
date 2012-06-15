@@ -152,6 +152,18 @@ trait ServerSRPParameter extends SRPParameter {
   //S = (Av^u) ^ b (mod N)
   def S(A: Array[Byte], vVal: Array[Byte], u: Array[Byte], bVal: Array[Byte]) = 
     ((BigInt(vVal).modPow(BigInt(u), N)) * (BigInt(A))).mod(N).modPow(BigInt(bVal), N).mod(N).toByteArray
+  
+    //M = H(K) //Simplified, override if necessary
+  def M(Kval:String) = {
+    import com.bitourea.srp.common.Util._
+    H(BigInt(Kval, 16).toByteArray).toHexString
+  }
+  
+  //M = H(M,K) //Simplified, override if necessary
+  def verifier(Kval:String, Mval:String) = {
+    import com.bitourea.srp.common.Util._
+    H(BigInt(Mval,16).toByteArray,BigInt(Kval,16).toByteArray).toHexString
+  }  
 }
 
 /**

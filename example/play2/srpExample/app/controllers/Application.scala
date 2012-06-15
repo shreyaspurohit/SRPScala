@@ -101,17 +101,17 @@ object Application extends Controller {
 
   /**
    * @param username The username
-   * @param K The SRP parameter K which is H(sessionId)
+   * @param M The SRP parameter M which is H(H(sessionId))
    * @return Action With SessionId or Error string 
    */
-  def validateServer(username:String, K:String) = Action(implicit request =>{
+  def validateServer(username:String, M:String) = Action(implicit request =>{
     import srp._
-    if(ExampleSRPServer.validateSessionHash(username, K)){
-    	Ok(ExampleSRPServer.getSession(username))
+    val (sessionId, hSessionId) = ExampleSRPServer.getSessionWithHash(username)
+    if(BigInt(ExampleSRPServer.M(hSessionId), 16).equals(BigInt(M,16))){
+    	Ok(ExampleSRPServer.verifier(hSessionId,M))
     }else{
-        Ok("Error: Authentication Failure. K mismatch.")
+        Ok("Error: Authentication Failure. M mismatch.")
     }
-    
   })
   
 }
