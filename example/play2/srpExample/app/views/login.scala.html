@@ -71,7 +71,6 @@
 		var Mval = M(Khex)
 		var verifier = serverVerifier(Mval, Khex) 
 		
-		$('.message').append(generatedImg.clone()).append("<label>Generated session Id: " + sessionId + "</label><br/>");
 		$('.message').append(generatedImg.clone()).append("<label>Generated K: " + Khex + "</label><br/>");
 		$('.message').append(sendImg.clone()).append("<label>Sending M: " + Mval + "</label><br/>");
 		$('.message').append(generatedImg.clone()).append("<label>Expecting Verifier: " + verifier + "</label><br/>");
