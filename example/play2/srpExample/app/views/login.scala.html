@@ -24,10 +24,13 @@
 <script src="@routes.Assets.at("javascripts/titaniumcore/SecureRandom.js")"></script>
 
 <script src="@routes.Assets.at("javascripts/srp.js")"></script>
+<script src="@routes.Assets.at("javascripts/gibberish-aes.min.js")"></script>
 <script type="text/javascript">
     var sendImg = $('<img src="@routes.Assets.at("images/send.png")" width="16" height="16">')
     var receiveImg = $('<img src="@routes.Assets.at("images/receive.png")" width="16" height="16">')
     var generatedImg = $('<img src="@routes.Assets.at("images/generated.png")" width="16" height="16">')
+    var sessionId=""
+    var Khex=""
     
 	function loginAction() {
 		$('.message').empty();
@@ -54,7 +57,7 @@
 				$('.message').append(receiveImg.clone()).append("<label>Received s: " + exch1[0] + "</label><br/>");
 				$('.message').append(receiveImg.clone()).append("<label>Received B: " + exch1[1] + "</label><br/>");
 				$('.message').append(generatedImg.clone()).append("<label>Current Expected Session S: " + Sval + "</label><br/>");
-				setCookie("sessionId", Sval);
+				sessionId=Sval;
 				setCookie("username", username);
 				validateServer();				
 			}
@@ -65,9 +68,8 @@
 	}
 	
 	function validateServer(){
-		var sessionId = getCookie("sessionId");
 		var username = getCookie("username");
-		var Khex = K(sessionId)
+		Khex = K(sessionId)
 		var Mval = M(Khex)
 		var verifier = serverVerifier(Mval, Khex) 
 		
@@ -99,18 +101,24 @@
 	}
 	
 	function getTheSecretPage(){
-		var sessionId = getCookie("sessionId");
+		GibberishAES.size(128);
 		var username = getCookie("username");
+		
+		var sessionIdEnc = GibberishAES.enc(sessionId, Khex);
+		var pageIdEnc = GibberishAES.enc("secret", Khex);
+		
 		$.ajax({
-			  url: '/secret',
+			  url: '/encpage',
 			  type: 'GET',
-			  data: {"username" : username, "sessionId" : sessionId}
+			  data: {"username" : username, "sessionId" : sessionIdEnc, "page" : pageIdEnc}
 			}).success(function(data){
 				if(data.indexOf("Error") >= 0){
 					$('.message').append("<label class='error'>" + data + "</label>");
 				}else{
+					GibberishAES.size(128);
+					var dataDec = GibberishAES.dec(data, Khex)
 					$('.loginForm').empty();
-					$('.loginForm').append(data);	
+					$('.loginForm').append(dataDec);	
 				}				
 			}).error(function(err){
 				alert(err)

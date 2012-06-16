@@ -98,7 +98,16 @@ object Application extends Controller {
   def secret(username:String, sessionId:String) = Authenticated(username, sessionId){request =>
 												     Ok(views.html.secret())
  											      } 
-
+  /**
+   * The secret page that needs authentication to be seen. 
+   * The result is encrypted page data if authentication is valid and requested page is valid. 
+   */
+  def enc(username:String, sessionId:String, page:String) = EncryptedAuthenticatedPage(username, sessionId, page){decrypted =>
+    												decrypted._3 match {
+    												  case "secret" => Ok(decrypted._5(views.html.secret().body))
+    												  case _ => NotFound(<h1>Page not found</h1>)
+    												}												     
+ 											      }
   /**
    * @param username The username
    * @param M The SRP parameter M which is H(H(sessionId))

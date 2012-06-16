@@ -8,7 +8,7 @@ GET     /view/register              controllers.Application.index(viewType = "re
 GET     /view/login                 controllers.Application.index(viewType = "login")
 POST    /register                   controllers.Application.register
 POST    /login                      controllers.Application.login
-GET		/secret						controllers.Application.secret(username, sessionId)
+GET		/encpage						controllers.Application.enc(username, sessionId, page)
 GET		/validateServer				controllers.Application.validateServer(username, K)
 
 # Map static resources from the /public folder to the /assets URL path

@@ -41,7 +41,10 @@ function H(data, salt){
 	for (var i = 1; i < noOfIter; i++) {
 		result = sha.hash(result);
     }
-	result= [0].concat(result)
+	//if(new BigInteger(result).toByteArray()[0] < 0){
+		result= [0].concat(result)
+	//}
+	
     return result;
 }
 
@@ -110,5 +113,5 @@ function serverVerifier(Mval,Khex){
 }
 
 function K(sessionId){
-	return H(new BigInteger(sessionId, 16).toByteArray(), []).toHexString()
+	return new BigInteger(H(new BigInteger(sessionId, 16).toByteArray(), [])).toByteArray().toHexString()
 }
